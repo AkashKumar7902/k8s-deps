@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: go-api
+  template:
+    metadata:
+      labels:
+        app: go-api
+    spec:
+      containers:
+      - name: go-api
+        image: my-go-server:latest 
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        # Mongo Config
+        - name: MONGO_URI
+          value: "mongodb://myuser:mypassword@mongo-service:27017"
+        
+        # NEW: Postgres Config
+        # Connection string format: host=SERVICE_NAME port=5432 user=...
+        - name: POSTGRES_URI
+          value: "host=postgres-service port=5432 user=pguser password=pgpassword dbname=mydb sslmode=disable"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: go-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
