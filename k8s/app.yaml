@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: go-api-deployment
 spec:
-  replicas: 5
   selector:
     matchLabels:
       app: go-api
@@ -14,7 +13,7 @@ spec:
     spec:
       containers:
       - name: go-api
-        image: my-go-server:latest 
+        image: docker.io/keployakashkumar/my-go-server:latest 
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
