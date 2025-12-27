@@ -31,9 +31,6 @@ var (
 )
 
 func main() {
-	log.Println("Application booting... waiting 20 seconds before starting server.")
-	time.Sleep(20 * time.Second)
-
 	// --- 1. Connect to Mongo ---
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -83,11 +80,13 @@ func main() {
 // --- Handlers ---
 
 func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+	println("Received /hello request")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Hello, World!"))
 }
 
 func noisyHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received /noisy request")
 	type NoisyResponse struct {
 		RequestID string `json:"request_id"`
 		Nonce     int    `json:"nonce"`
@@ -109,6 +108,7 @@ func slowHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func mongoHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received /mongo request")
 	if mongoClient == nil {
 		http.Error(w, "Mongo not initialized", 500)
 		return
@@ -125,6 +125,7 @@ func mongoHandler(w http.ResponseWriter, r *http.Request) {
 
 // New: Outgoing HTTPS call
 func externalApiHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received /external request")
 	// We will call a public JSON placeholder API
 	url := "https://jsonplaceholder.typicode.com/todos/1"
 
@@ -145,6 +146,7 @@ func externalApiHandler(w http.ResponseWriter, r *http.Request) {
 
 // New: Postgres Query
 func postgresHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received /postgres request")
 	if pgClient == nil {
 		http.Error(w, "Postgres not initialized", 500)
 		return
